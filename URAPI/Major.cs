@@ -4,10 +4,10 @@ namespace URAPI
 {
     public class Major
     {
-        readonly string _url;
-        public readonly string Name;
         public readonly Collage Collage;
+        public readonly string Name;
 
+        readonly string _url;
         public Major(Collage collage,string name, string URL)
         {
             Collage = collage;

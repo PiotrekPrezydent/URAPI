@@ -5,7 +5,9 @@ namespace URAPI
     public class Collage
     {
         public readonly string Name;
+
         readonly string _url;
+
         public Collage(string name,string URL)
         {
             Name = name;
