@@ -2,13 +2,18 @@
 {
     public class YearOfStudies
     {
-        public string Name;
+        public readonly Major Major;
+        public readonly Collage Collage;
+        public readonly string Name;
         //learn how to get that clear
-        public string CleanName;
-        string _scheduleLink;
+        public readonly string CleanName;
 
-        public YearOfStudies(string name, string scheduleLink)
+        readonly string _scheduleLink;
+
+        public YearOfStudies(Major major,string name, string scheduleLink)
         {
+            Major = major;
+            Collage = Major.Collage;
             Name = name;
             CleanName = "WIP";
             _scheduleLink = scheduleLink;

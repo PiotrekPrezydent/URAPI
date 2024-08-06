@@ -5,8 +5,8 @@ namespace URAPI
     public class Major
     {
         readonly string _url;
-        public string Name;
-        public Collage Collage;
+        public readonly string Name;
+        public readonly Collage Collage;
 
         public Major(Collage collage,string name, string URL)
         {
@@ -72,7 +72,7 @@ namespace URAPI
                     if (m.ContainsAny(Client.excludedWords))
                         continue;
                     m = m.Substring(m.LastIndexOf("/") + 1);
-                    yearsOfStudies.Add(new YearOfStudies(m.Substring(0, m.LastIndexOf(".")), Client.UR_URL + "/" + a.Attributes["href"].Value));
+                    yearsOfStudies.Add(new YearOfStudies(this,m.Substring(0, m.LastIndexOf(".")), Client.UR_URL + "/" + a.Attributes["href"].Value));
                 }
             }
         }
