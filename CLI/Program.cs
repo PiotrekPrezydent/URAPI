@@ -6,7 +6,17 @@ namespace CLI
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(Hello.Sample);
+            foreach (var c in Client.GetCollages())
+            {
+                Console.WriteLine(c.Name + " #########################################");
+                foreach (var m in c.GetMajors())
+                {
+                    Console.WriteLine(m.Name);
+                    m.GetYearOfStudies();
+                }
+                Console.WriteLine("\n\n\n\n\n");
+            }
+
         }
     }
 }
