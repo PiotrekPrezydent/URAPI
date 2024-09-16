@@ -31,11 +31,9 @@ namespace URAPI
             var collagesSubmenu = doc.DocumentNode.SelectNodes(xpath)[0].ParentNode;
 
             var collagesLink = collagesSubmenu.SelectNodes("ul//li/a[1]");
-            List<Collage> col = new();
             foreach (var collageHTML in collagesLink)
-                col.Add(new Collage(collageHTML.InnerText, UR_URL +"/"+ collageHTML.Attributes["href"].Value));
+                yield return new Collage(collageHTML.InnerText, UR_URL +"/"+ collageHTML.Attributes["href"].Value);
 
-            return col;
         }
 
         internal static bool ContainsAny(this string a, params string[] tab)

@@ -29,11 +29,8 @@ namespace URAPI
 
             var majorsLi = doc.DocumentNode.SelectNodes(xpath);
 
-            List<Major> majors = new();
             foreach (var major in majorsLi)
-                majors.Add(new Major(this,major.Attributes["title"].Value, Client.UR_URL + "/" + major.Attributes["href"].Value));
-
-            return majors;
+                yield return new Major(this,major.Attributes["title"].Value, Client.UR_URL + "/" + major.Attributes["href"].Value);
         }
     }
 }

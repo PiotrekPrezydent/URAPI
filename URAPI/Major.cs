@@ -17,7 +17,6 @@ namespace URAPI
 
         public IEnumerable<YearOfStudies> GetYearOfStudies()
         {
-            List<YearOfStudies> yearsOfStudies = new();
             string xpath = "//div[contains(@class, 'main-content') or contains(@class, 'inside')]//li//a[contains(@title, 'Rozkłady') or contains(@title, 'Schedule') or contains(@title, 'plany zajęć') or contains(@title, 'rozkład zajęć') or contains(@title, 'rozkłady zajęć')][1]";
 
             var web = new HtmlWeb();
@@ -26,7 +25,7 @@ namespace URAPI
 
             //happens in Media, Visual and Social Communication
             if (scheleudesUrl == null)
-                return yearsOfStudies;
+                yield break;
 
             doc = web.Load(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value);
             xpath = "//div[contains(@class, 'main-content')]//a[contains(@title, 'studia stacjonarne') or contains(@title, 'studia niestacjonarne')]";
@@ -38,7 +37,7 @@ namespace URAPI
             {
                 var links = doc.DocumentNode.SelectNodes(xpath);
                 if (links == null)
-                    return yearsOfStudies;
+                    yield break;
 
                 foreach (var link in links)
                 {
@@ -48,23 +47,22 @@ namespace URAPI
                         continue;
                     }
 
-                    GetScheludesFromURL(Client.UR_URL +"/"+ link.Attributes["href"].Value);
+                    foreach(var schelude in GetScheludesFromURL(Client.UR_URL +"/"+ link.Attributes["href"].Value))
+                        yield return schelude;
                 }
-                return yearsOfStudies;
+                yield break;
             }
-            GetScheludesFromURL(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value);
+            foreach (var schelude in GetScheludesFromURL(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value))
+                yield return schelude;
 
 
-            return yearsOfStudies;
-
-
-            void GetScheludesFromURL(string url)
+            IEnumerable<YearOfStudies> GetScheludesFromURL(string url)
             {
                 doc = web.Load(url);
                 xpath = "//div[contains(@class, 'main-content')]//a[contains(@href, '.pdf') or contains(@href,'.xlsx')]";
                 var anyA = doc.DocumentNode.SelectNodes(xpath);
                 if (anyA == null)
-                    return;
+                    yield break;
 
                 foreach (var a in anyA)
                 {
@@ -72,7 +70,7 @@ namespace URAPI
                     if (m.ContainsAny(Client.excludedWords))
                         continue;
                     m = m.Substring(m.LastIndexOf("/") + 1);
-                    yearsOfStudies.Add(new YearOfStudies(this,m.Substring(0, m.LastIndexOf(".")), Client.UR_URL + "/" + a.Attributes["href"].Value));
+                    yield return new YearOfStudies(this, m.Substring(0, m.LastIndexOf(".")), Client.UR_URL + "/" + a.Attributes["href"].Value);
                 }
             }
         }
