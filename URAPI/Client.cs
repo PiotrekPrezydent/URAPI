@@ -22,8 +22,9 @@ namespace URAPI
             "Organizacja"
         };
 
-        public static IEnumerable<Collage> GetCollages()
+        public static List<Collage> GetCollages()
         {
+            var result = new List<Collage>();
             string xpath = "//li/a[@title=\"Kolegia\"][1]";
 
             var web = new HtmlWeb();
@@ -32,7 +33,9 @@ namespace URAPI
 
             var collagesLink = collagesSubmenu.SelectNodes("ul//li/a[1]");
             foreach (var collageHTML in collagesLink)
-                yield return new Collage(collageHTML.InnerText, UR_URL +"/"+ collageHTML.Attributes["href"].Value);
+                result.Add(new Collage(collageHTML.InnerText, UR_URL + "/" + collageHTML.Attributes["href"].Value));
+
+            return result;
 
         }
 

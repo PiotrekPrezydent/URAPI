@@ -14,8 +14,9 @@ namespace URAPI
             _url = URL;
         }
 
-        public IEnumerable<Major> GetMajors()
+        public List<Major> GetMajors()
         {
+            var result = new List<Major>();
             string xpath = "//li/a[@title=\"Student\"][1]";
             var web = new HtmlWeb();
             var doc = web.Load(_url);
@@ -30,7 +31,10 @@ namespace URAPI
             var majorsLi = doc.DocumentNode.SelectNodes(xpath);
 
             foreach (var major in majorsLi)
-                yield return new Major(this,major.Attributes["title"].Value, Client.UR_URL + "/" + major.Attributes["href"].Value);
+                result.Add(new Major(this, major.Attributes["title"].Value, Client.UR_URL + "/" + major.Attributes["href"].Value));
+            return result;
         }
+
+        public override string ToString() => Name;
     }
 }

@@ -15,17 +15,18 @@ namespace URAPI
             _url = URL;
         }
 
-        public IEnumerable<YearOfStudies> GetYearOfStudies()
+        public List<YearOfStudies> GetYearOfStudies()
         {
-            string xpath = "//div[contains(@class, 'main-content') or contains(@class, 'inside')]//li//a[contains(@title, 'Rozkłady') or contains(@title, 'Schedule') or contains(@title, 'plany zajęć') or contains(@title, 'rozkład zajęć') or contains(@title, 'rozkłady zajęć')][1]";
+            var result = new List<YearOfStudies>();
 
+            string xpath = "//div[contains(@class, 'main-content') or contains(@class, 'inside')]//li//a[contains(@title, 'Rozkłady') or contains(@title, 'Schedule') or contains(@title, 'plany zajęć') or contains(@title, 'rozkład zajęć') or contains(@title, 'rozkłady zajęć')][1]";
             var web = new HtmlWeb();
             var doc = web.Load(_url);
             var scheleudesUrl = doc.DocumentNode.SelectNodes(xpath);
 
             //happens in Media, Visual and Social Communication
             if (scheleudesUrl == null)
-                yield break;
+                return result;
 
             doc = web.Load(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value);
             xpath = "//div[contains(@class, 'main-content')]//a[contains(@title, 'studia stacjonarne') or contains(@title, 'studia niestacjonarne')]";
@@ -37,32 +38,28 @@ namespace URAPI
             {
                 var links = doc.DocumentNode.SelectNodes(xpath);
                 if (links == null)
-                    yield break;
+                    return result;
 
                 foreach (var link in links)
                 {
                     if (link.Attributes["href"].Value.EndsWith(".pdf") || link.Attributes["href"].Value.EndsWith(".xlsx"))
-                    {
-                        Console.WriteLine(link.Attributes["href"].Value);
                         continue;
-                    }
-
-                    foreach(var schelude in GetScheludesFromURL(Client.UR_URL +"/"+ link.Attributes["href"].Value))
-                        yield return schelude;
+                    result.AddRange(GetScheludesFromURL(Client.UR_URL + "/" + link.Attributes["href"].Value));
                 }
-                yield break;
+                return result;
             }
-            foreach (var schelude in GetScheludesFromURL(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value))
-                yield return schelude;
+            result.AddRange(GetScheludesFromURL(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value));
+            return result;
 
-
-            IEnumerable<YearOfStudies> GetScheludesFromURL(string url)
+            List<YearOfStudies> GetScheludesFromURL(string url)
             {
+                var result = new List<YearOfStudies>();
                 doc = web.Load(url);
                 xpath = "//div[contains(@class, 'main-content')]//a[contains(@href, '.pdf') or contains(@href,'.xlsx')]";
                 var anyA = doc.DocumentNode.SelectNodes(xpath);
+
                 if (anyA == null)
-                    yield break;
+                    return result;
 
                 foreach (var a in anyA)
                 {
@@ -70,9 +67,12 @@ namespace URAPI
                     if (m.ContainsAny(Client.excludedWords))
                         continue;
                     m = m.Substring(m.LastIndexOf("/") + 1);
-                    yield return new YearOfStudies(this, m.Substring(0, m.LastIndexOf(".")), Client.UR_URL + "/" + a.Attributes["href"].Value);
+                    result.Add(new YearOfStudies(this, m.Substring(0, m.LastIndexOf(".")), Client.UR_URL + "/" + a.Attributes["href"].Value));
                 }
+                return result;
             }
         }
+
+        public override string ToString() => Name;
     }
 }

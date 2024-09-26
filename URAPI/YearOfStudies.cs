@@ -18,5 +18,7 @@
             CleanName = "WIP";
             _scheduleLink = scheduleLink;
         }
+
+        public override string ToString() => Name;
     }
 }
