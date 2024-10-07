@@ -6,13 +6,13 @@ namespace CLI
     {
         static void Main(string[] args)
         {
-            foreach (var c in Client.GetCollages())
+            foreach (var c in Client.GetCollages().Result)
             {
                 Console.WriteLine(c.Name + " #########################################");
-                foreach (var m in c.GetMajors())
+                foreach (var m in c.GetMajors().Result)
                 {
                     Console.WriteLine(m.Name);
-                    foreach(var y in m.GetYearOfStudies())
+                    foreach(var y in m.GetYearOfStudies().Result)
                     {
                         Console.WriteLine(y.Name);
                     }

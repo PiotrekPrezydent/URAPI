@@ -4,6 +4,9 @@ namespace URAPI
 {
     public class Collage
     {
+        public static Action OnGetMajorsStarted = delegate { };
+        public static Action OnGetMajorsEnded = delegate { };
+
         public readonly string Name;
 
         readonly string _url;
@@ -14,12 +17,13 @@ namespace URAPI
             _url = URL;
         }
 
-        public List<Major> GetMajors()
+        public async Task<List<Major>> GetMajors()
         {
+            OnGetMajorsStarted.Invoke();
             var result = new List<Major>();
             string xpath = "//li/a[@title=\"Student\"][1]";
             var web = new HtmlWeb();
-            var doc = web.Load(_url);
+            var doc = await web.LoadFromWebAsync(_url);
 
             var studentSubmenu = doc.DocumentNode.SelectNodes(xpath)[0].ParentNode;
             xpath = "ul//li/a[@title=\"Kierunki studiów (programy, rozkłady, sylabusy)\"][1]";
@@ -32,6 +36,7 @@ namespace URAPI
 
             foreach (var major in majorsLi)
                 result.Add(new Major(this, major.Attributes["title"].Value, Client.UR_URL + "/" + major.Attributes["href"].Value));
+            OnGetMajorsEnded.Invoke();
             return result;
         }
 

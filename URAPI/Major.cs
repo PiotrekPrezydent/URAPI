@@ -4,6 +4,8 @@ namespace URAPI
 {
     public class Major
     {
+        public static Action OnGetYearOfStudiesStarted = delegate { };
+        public static Action OnGetYearOfStudiesEnded = delegate { };
         public readonly Collage Collage;
         public readonly string Name;
 
@@ -15,20 +17,21 @@ namespace URAPI
             _url = URL;
         }
 
-        public List<YearOfStudies> GetYearOfStudies()
+        public async Task<List<YearOfStudies>> GetYearOfStudies()
         {
+            OnGetYearOfStudiesStarted.Invoke();
             var result = new List<YearOfStudies>();
 
             string xpath = "//div[contains(@class, 'main-content') or contains(@class, 'inside')]//li//a[contains(@title, 'Rozkłady') or contains(@title, 'Schedule') or contains(@title, 'plany zajęć') or contains(@title, 'rozkład zajęć') or contains(@title, 'rozkłady zajęć')][1]";
             var web = new HtmlWeb();
-            var doc = web.Load(_url);
+            var doc = await web.LoadFromWebAsync(_url);
             var scheleudesUrl = doc.DocumentNode.SelectNodes(xpath);
 
             //happens in Media, Visual and Social Communication
             if (scheleudesUrl == null)
                 return result;
 
-            doc = web.Load(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value);
+            doc = await web.LoadFromWebAsync(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value);
             xpath = "//div[contains(@class, 'main-content')]//a[contains(@title, 'studia stacjonarne') or contains(@title, 'studia niestacjonarne')]";
             var moreOptions = doc.DocumentNode.SelectNodes(xpath);
 
@@ -44,17 +47,18 @@ namespace URAPI
                 {
                     if (link.Attributes["href"].Value.EndsWith(".pdf") || link.Attributes["href"].Value.EndsWith(".xlsx"))
                         continue;
-                    result.AddRange(GetScheludesFromURL(Client.UR_URL + "/" + link.Attributes["href"].Value));
+                    result.AddRange(await GetScheludesFromURL(Client.UR_URL + "/" + link.Attributes["href"].Value));
                 }
                 return result;
             }
-            result.AddRange(GetScheludesFromURL(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value));
+            result.AddRange(await GetScheludesFromURL(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value));
+            OnGetYearOfStudiesEnded.Invoke();
             return result;
 
-            List<YearOfStudies> GetScheludesFromURL(string url)
+            async Task<List<YearOfStudies>> GetScheludesFromURL(string url)
             {
                 var result = new List<YearOfStudies>();
-                doc = web.Load(url);
+                doc = await web.LoadFromWebAsync(url);
                 xpath = "//div[contains(@class, 'main-content')]//a[contains(@href, '.pdf') or contains(@href,'.xlsx')]";
                 var anyA = doc.DocumentNode.SelectNodes(xpath);
 

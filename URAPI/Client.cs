@@ -4,6 +4,8 @@ namespace URAPI
 {
     public static class Client
     {
+        public static Action OnGetCollagesStarted = delegate { };
+        public static Action OnGetCollagesEnded = delegate { };
         public const string UR_URL = "https://www.ur.edu.pl";
 
         internal static readonly string[] excludedWords =
@@ -22,21 +24,22 @@ namespace URAPI
             "Organizacja"
         };
 
-        public static List<Collage> GetCollages()
+        public static async Task<List<Collage>> GetCollages()
         {
+            OnGetCollagesStarted.Invoke();
             var result = new List<Collage>();
             string xpath = "//li/a[@title=\"Kolegia\"][1]";
 
             var web = new HtmlWeb();
-            var doc = web.Load(UR_URL);
+            var doc = await web.LoadFromWebAsync(UR_URL);
             var collagesSubmenu = doc.DocumentNode.SelectNodes(xpath)[0].ParentNode;
 
             var collagesLink = collagesSubmenu.SelectNodes("ul//li/a[1]");
             foreach (var collageHTML in collagesLink)
                 result.Add(new Collage(collageHTML.InnerText, UR_URL + "/" + collageHTML.Attributes["href"].Value));
 
+            OnGetCollagesEnded.Invoke();
             return result;
-
         }
 
         internal static bool ContainsAny(this string a, params string[] tab)
