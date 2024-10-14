@@ -15,9 +15,9 @@ namespace URAPI
             _url = URL;
         }
 
-        public async Task<List<YearOfStudies>> GetYearOfStudies()
+        public async Task<List<Schedule>> GetSchedules()
         {
-            var result = new List<YearOfStudies>();
+            var result = new List<Schedule>();
 
             string xpath = "//div[contains(@class, 'main-content') or contains(@class, 'inside')]//li//a[contains(@title, 'Rozkłady') or contains(@title, 'Schedule') or contains(@title, 'plany zajęć') or contains(@title, 'rozkład zajęć') or contains(@title, 'rozkłady zajęć')][1]";
             var web = new HtmlWeb();
@@ -52,9 +52,9 @@ namespace URAPI
 
             return result;
 
-            async Task<List<YearOfStudies>> GetScheludesFromURL(string url)
+            async Task<List<Schedule>> GetScheludesFromURL(string url)
             {
-                var result = new List<YearOfStudies>();
+                var result = new List<Schedule>();
                 doc = await web.LoadFromWebAsync(url);
                 xpath = "//div[contains(@class, 'main-content')]//a[contains(@href, '.pdf') or contains(@href,'.xlsx')]";
                 var anyA = doc.DocumentNode.SelectNodes(xpath);
@@ -68,7 +68,7 @@ namespace URAPI
                     if (m.ContainsAny(Client.excludedWords))
                         continue;
                     m = m.Substring(m.LastIndexOf("/") + 1);
-                    result.Add(new YearOfStudies(this, m.Substring(0, m.LastIndexOf(".")), Client.UR_URL + "/" + a.Attributes["href"].Value));
+                    result.Add(new Schedule(this, m.Substring(0, m.LastIndexOf(".")), Client.UR_URL + "/" + a.Attributes["href"].Value));
                 }
                 return result;
             }

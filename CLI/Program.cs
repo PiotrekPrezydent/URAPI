@@ -12,7 +12,7 @@ namespace CLI
                 foreach (var m in c.GetMajors().Result)
                 {
                     Console.WriteLine(m.Name);
-                    foreach(var y in m.GetYearOfStudies().Result)
+                    foreach(var y in m.GetSchedules().Result)
                     {
                         Console.WriteLine(y.Name);
                     }
