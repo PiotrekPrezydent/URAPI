@@ -4,8 +4,6 @@ namespace URAPI
 {
     public class Major
     {
-        public static Action OnGetYearOfStudiesStarted = delegate { };
-        public static Action OnGetYearOfStudiesEnded = delegate { };
         public readonly Collage Collage;
         public readonly string Name;
 
@@ -19,7 +17,6 @@ namespace URAPI
 
         public async Task<List<YearOfStudies>> GetYearOfStudies()
         {
-            OnGetYearOfStudiesStarted.Invoke();
             var result = new List<YearOfStudies>();
 
             string xpath = "//div[contains(@class, 'main-content') or contains(@class, 'inside')]//li//a[contains(@title, 'Rozkłady') or contains(@title, 'Schedule') or contains(@title, 'plany zajęć') or contains(@title, 'rozkład zajęć') or contains(@title, 'rozkłady zajęć')][1]";
@@ -52,7 +49,7 @@ namespace URAPI
                 return result;
             }
             result.AddRange(await GetScheludesFromURL(Client.UR_URL + "/" + scheleudesUrl![0].Attributes["href"].Value));
-            OnGetYearOfStudiesEnded.Invoke();
+
             return result;
 
             async Task<List<YearOfStudies>> GetScheludesFromURL(string url)

@@ -4,8 +4,6 @@ namespace URAPI
 {
     public static class Client
     {
-        public static Action OnGetCollagesStarted = delegate { };
-        public static Action OnGetCollagesEnded = delegate { };
         public const string UR_URL = "https://www.ur.edu.pl";
 
         internal static readonly string[] excludedWords =
@@ -26,7 +24,6 @@ namespace URAPI
 
         public static async Task<List<Collage>> GetCollages()
         {
-            OnGetCollagesStarted.Invoke();
             var result = new List<Collage>();
             string xpath = "//li/a[@title=\"Kolegia\"][1]";
 
@@ -38,7 +35,6 @@ namespace URAPI
             foreach (var collageHTML in collagesLink)
                 result.Add(new Collage(collageHTML.InnerText, UR_URL + "/" + collageHTML.Attributes["href"].Value));
 
-            OnGetCollagesEnded.Invoke();
             return result;
         }
 

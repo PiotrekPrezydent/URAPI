@@ -4,9 +4,6 @@ namespace URAPI
 {
     public class Collage
     {
-        public static Action OnGetMajorsStarted = delegate { };
-        public static Action OnGetMajorsEnded = delegate { };
-
         public readonly string Name;
 
         readonly string _url;
@@ -19,7 +16,6 @@ namespace URAPI
 
         public async Task<List<Major>> GetMajors()
         {
-            OnGetMajorsStarted.Invoke();
             var result = new List<Major>();
             string xpath = "//li/a[@title=\"Student\"][1]";
             var web = new HtmlWeb();
@@ -36,7 +32,7 @@ namespace URAPI
 
             foreach (var major in majorsLi)
                 result.Add(new Major(this, major.Attributes["title"].Value, Client.UR_URL + "/" + major.Attributes["href"].Value));
-            OnGetMajorsEnded.Invoke();
+
             return result;
         }
 
