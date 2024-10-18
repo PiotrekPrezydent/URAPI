@@ -16,7 +16,7 @@ namespace CLI
                     {
                         if (s.ScheduleType != "pdf")
                             continue;
-                        var ms = await s.GetPDFAsImageStream(0);
+                        var ms = await s.GetScheduleByteArray();
                         Console.WriteLine(ms ==null);
                     }
                     Console.WriteLine("\n\n");

@@ -1,5 +1,4 @@
-﻿using PDFtoImage;
-using System.Net.Http;
+﻿using System.Net.Http;
 
 namespace URAPI
 {
@@ -23,15 +22,11 @@ namespace URAPI
             CleanName = "WIP";
             _scheduleLink = scheduleLink;
         }
-        public async Task<MemoryStream> GetPDFAsImageStream(int page = 0)
+        public async Task<byte[]> GetScheduleByteArray()
         {
-            //TD: convert xlsx and xls to pdf before
-            MemoryStream ms = new();
             HttpClient client = new HttpClient();
             byte[] bytes = await client.GetByteArrayAsync(_scheduleLink);
-            Conversion.SavePng(ms, bytes, page: page);
-            ms.Position = 0;
-            return ms;
+            return bytes;
         }
 
         public override string ToString() => Name;
