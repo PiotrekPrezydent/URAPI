@@ -14,11 +14,10 @@ namespace CLI
                     Console.WriteLine(m.Name);
                     foreach(var s in m.GetSchedules().Result)
                     {
-                        Image? i = await s.ScheduleAsImage();
-                        if (i == null)
-                            Console.WriteLine("null");
-                        else
-                            Console.WriteLine("git");
+                        if (s.ScheduleType != "pdf")
+                            continue;
+                        var ms = await s.GetPDFAsImageStream(0);
+                        Console.WriteLine(ms ==null);
                     }
                     Console.WriteLine("\n\n");
                 }

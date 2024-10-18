@@ -8,11 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FreeSpire.PDF" Version="10.2.0" />
-    <PackageReference Include="FreeSpire.XLS" Version="14.2.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.67" />
     <PackageReference Include="HtmlAgilityPack.CssSelectors" Version="1.0.2" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
+    <PackageReference Include="PDFtoImage" Version="4.1.1" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 

@@ -1,8 +1,4 @@
-﻿using Spire.Pdf;
-using Spire.Pdf.Graphics;
-using Spire.Xls;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using PDFtoImage;
 using System.Net.Http;
 
 namespace URAPI
@@ -27,46 +23,15 @@ namespace URAPI
             CleanName = "WIP";
             _scheduleLink = scheduleLink;
         }
-
-        public async Task<int> GetPagesCount() 
+        public async Task<MemoryStream> GetPDFAsImageStream(int page = 0)
         {
-            if (ScheduleType != "pdf")
-                return int.MinValue;
-
+            //TD: convert xlsx and xls to pdf before
+            MemoryStream ms = new();
             HttpClient client = new HttpClient();
             byte[] bytes = await client.GetByteArrayAsync(_scheduleLink);
-            MemoryStream ms = new(bytes);
-            PdfDocument pdf = new();
-            pdf.LoadFromStream(ms);
-
-            return pdf.Pages.Count;
-        }
-
-        public async Task<Image?> ScheduleAsImage(int page = 0)
-        {
-            Image i = default;
-            HttpClient client = new HttpClient();
-            byte[] bytes = await client.GetByteArrayAsync(_scheduleLink);
-            MemoryStream ms = new(bytes);
-
-            if (ScheduleType == "pdf")
-            {
-                PdfDocument pdf = new();
-                pdf.LoadFromStream(ms);
-                i = pdf.SaveAsImage(page, PdfImageType.Bitmap, 300, 300);
-            }
-            else if (ScheduleType == "xlsx" || ScheduleType == "xls")
-            {
-                Workbook wb = new();
-                wb.LoadFromStream(ms);
-                i = wb.SaveAsImage(page, 300, 300);
-            }
-            else
-                return null;
-
-            i.RotateFlip(RotateFlipType.Rotate270FlipXY);
-            return i;
-
+            Conversion.SavePng(ms, bytes, page: page);
+            ms.Position = 0;
+            return ms;
         }
 
         public override string ToString() => Name;
