@@ -14,10 +14,6 @@ namespace CLI
                     Console.WriteLine(m.Name);
                     foreach(var s in m.GetSchedules().Result)
                     {
-                        if (s.ScheduleType != "pdf")
-                            continue;
-                        var ms = await s.GetScheduleByteArray();
-                        Console.WriteLine(ms ==null);
                     }
                     Console.WriteLine("\n\n");
                 }

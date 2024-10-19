@@ -22,12 +22,16 @@ namespace URAPI
             CleanName = "WIP";
             _scheduleLink = scheduleLink;
         }
-        public async Task<byte[]> GetScheduleByteArray()
+        public async Task<MemoryStream> GetScheduleMemoryStream()
         {
             HttpClient client = new HttpClient();
             byte[] bytes = await client.GetByteArrayAsync(_scheduleLink);
-            return bytes;
+            MemoryStream stream = new MemoryStream(bytes);
+            stream.Position = 0;
+
+            return stream;
         }
+
 
         public override string ToString() => Name;
     }
